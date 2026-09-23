@@ -5,14 +5,14 @@ from collections import defaultdict
 from .parser import Email
 
 
-def group_by_model(emails: list[Email], router, laya_module) -> list[tuple[int, Email]]:
+def group_by_model(emails: list[Email], router, laya_module) -> list[tuple[str, int, Email]]:
     """Keep each language checkpoint hot while classifying a fetched batch."""
     groups = defaultdict(list)
     questions = laya_module.email_questions()
     for index, email in enumerate(emails):
         state = laya_module.email_state(email.subject, email.body, sender=email.sender)
         model = router.route(state, questions).model
-        groups[model].append((index, email))
+        groups[model].append((model, index, email))
     return [item for group in groups.values() for item in group]
 
 

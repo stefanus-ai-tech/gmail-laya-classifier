@@ -1,6 +1,7 @@
 """Command-line entry point."""
 
 import argparse
+import gc
 import json
 import sys
 from datetime import datetime, timezone
@@ -60,7 +61,22 @@ def main(argv=None):
             work = group_by_model(emails, router, laya)
         else:
             work = []
-        for completed, (index, email) in enumerate(work, 1):
+        active_model = None
+        agent = None
+        for completed, (model, index, email) in enumerate(work, 1):
+            if model != active_model:
+                if active_model and max_loaded == 1:
+                    router.unload(active_model)
+                    agent = None
+                    gc.collect()
+                    if device == "cuda":
+                        torch.cuda.empty_cache()
+                print(f"Loading Laya model: {model}...", flush=True)
+                load_started = perf_counter()
+                agent = router.load(model)
+                print(f"Laya model {model} ready on {agent.device} in "
+                      f"{perf_counter() - load_started:.1f}s", flush=True)
+                active_model = model
             started = perf_counter()
             record = classify(email, router=router, laya_module=laya)
             laya_elapsed = perf_counter() - started

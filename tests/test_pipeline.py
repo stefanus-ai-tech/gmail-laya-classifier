@@ -84,8 +84,10 @@ class ClassifierTests(unittest.TestCase):
             email_questions=lambda: {"category": {"type": "choice"}},
         )
         work = group_by_model(emails, FakeRouter(), fake_laya)
-        self.assertEqual([index for index, _ in work], [0, 2, 1, 3])
-        self.assertEqual([email.id for _, email in work], ["a", "c", "b", "d"])
+        self.assertEqual([index for _, index, _ in work], [0, 2, 1, 3])
+        self.assertEqual([email.id for _, _, email in work], ["a", "c", "b", "d"])
+        self.assertEqual([model for model, _, _ in work],
+                         ["english", "english", "multilingual", "multilingual"])
 
 
 class GmailListingTests(unittest.TestCase):
