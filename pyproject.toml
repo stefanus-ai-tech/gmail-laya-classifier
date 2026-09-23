@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gmail-laya-classifier"
+version = "0.1.0"
+description = "Read-only Gmail classification with Laya"
+requires-python = ">=3.10"
+dependencies = [
+  "google-api-python-client>=2.0,<3",
+  "google-auth-oauthlib>=1.0,<2",
+  "laya>=0.3.6,<0.4",
+]
+
+[project.scripts]
+gmail-laya = "gmail_laya.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
